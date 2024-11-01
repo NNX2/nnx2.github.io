@@ -33,6 +33,10 @@
             margin-top: 20px;
             text-align: left;
         }
+
+        .error {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -44,31 +48,41 @@
             <p><strong>Navigateurs :</strong> <span id="browser"></span></p>
             <p><strong>Date et Heure :</strong> <span id="datetime"></span></p>
             <p><strong>Localisation :</strong> <span id="location"></span></p>
+            <p class="error" id="error"></p>
         </div>
     </div>
     <script>
         (async () => {
-            // Récupérer l'IP de l'utilisateur avec une API tierce
-            const ipResponse = await fetch('https://api.ipify.org?format=json');
-            const ipData = await ipResponse.json();
-            const userIP = ipData.ip;
+            try {
+                // Récupérer l'IP de l'utilisateur avec une API tierce
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                if (!ipResponse.ok) throw new Error("Erreur lors de la récupération de l'IP");
+                const ipData = await ipResponse.json();
+                const userIP = ipData.ip;
 
-            // Récupérer les informations géographiques avec ip-api.com
-            const geoResponse = await fetch(`http://ip-api.com/json/${userIP}`);
-            const geoData = await geoResponse.json();
+                // Récupérer les informations géographiques avec ip-api.com
+                const geoResponse = await fetch(`http://ip-api.com/json/${userIP}`);
+                if (!geoResponse.ok) throw new Error("Erreur lors de la récupération des informations géographiques");
+                const geoData = await geoResponse.json();
 
-            // Récupérer les informations du navigateur
-            const userAgent = navigator.userAgent;
-            const browserName = navigator.appName;
-            const browserVersion = navigator.appVersion;
-            const currentDateTime = new Date().toLocaleString();
+                // Récupérer les informations du navigateur
+                const userAgent = navigator.userAgent;
+                const browserName = navigator.appName;
+                const browserVersion = navigator.appVersion;
+                const currentDateTime = new Date().toLocaleString();
 
-            // Afficher les informations sur la page
-            document.getElementById('ip').textContent = userIP;
-            document.getElementById('browser').textContent = `${browserName} ${browserVersion}`;
-            document.getElementById('datetime').textContent = currentDateTime;
-            document.getElementById('location').textContent = `${geoData.city}, ${geoData.regionName}, ${geoData.country}`;
+                // Afficher les informations sur la page
+                document.getElementById('ip').textContent = userIP;
+                document.getElementById('browser').textContent = `${browserName} ${browserVersion}`;
+                document.getElementById('datetime').textContent = currentDateTime;
+                document.getElementById('location').textContent = `${geoData.city}, ${geoData.regionName}, ${geoData.country}`;
+            } catch (error) {
+                // Afficher le message d'erreur dans la page
+                document.getElementById('error').textContent = error.message;
+                console.error(error);
+            }
         })();
     </script>
 </body>
 </html>
+
